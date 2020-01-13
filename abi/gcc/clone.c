@@ -25,6 +25,8 @@
    This file was modified to allow compatibility with the GNU Transactional
    Memory Library (libitm). */
 
+#include <lzma.h>
+
 /* No include needed since the file is included */
 
 struct clone_entry

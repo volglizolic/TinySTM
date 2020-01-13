@@ -4,6 +4,7 @@ ROOT ?= .
 # CC, LD and AR are builtin-variables of Make (?= is useless in this case)
 # To override these defines, you must use "make CC=cc" or change it here
 # Linker set by default to the CC definition
+CC = gcc
 LD = $(CC)
 # Other tools
 DOXYGEN ?= doxygen

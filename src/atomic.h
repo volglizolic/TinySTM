@@ -26,15 +26,20 @@
 #ifndef _ATOMIC_H_
 # define _ATOMIC_H_
 
+// TODO remove definition in release ATOMIC_BUILTIN, is set in Makefile
+//#define ATOMIC_BUILTIN
+
 # ifdef ATOMIC_BUILTIN
-typedef volatile size_t atomic_t;
+#include <stdatomic.h>
+
+typedef volatile atomic_size_t atomic_t;
 #  ifdef __INTEL_COMPILER
 #   define ATOMIC_CB                     __memory_barrier()
 #  else /* ! __INTEL_COMPILER, assuming __GNUC__ */
-#   define ATOMIC_CB                     __asm__ __volatile__("": : :"memory")
+#   define ATOMIC_CB                     (atomic_thread_fence(memory_order_seq_cst)) /*__asm__ __volatile__("": : :"memory")*/
 #  endif /* ! __INTEL_COMPILER */
 #  ifndef UNSAFE
-#   warning "This is experimental and shouldn't be used"
+//#   warning "This is experimental and shouldn't be used"
 /*
    Note: __sync_ is available for GCC 4.2+ and ICC 11.1+
    But these definitions are not 100% safe:
@@ -43,16 +48,16 @@ typedef volatile size_t atomic_t;
    C11 and C++11 also propose atomic operations.
 */
 #   define ATOMIC_CAS_FULL(a, e, v)      (__sync_bool_compare_and_swap(a, e, v))
-#   define ATOMIC_FETCH_INC_FULL(a)      (__sync_fetch_and_add(a, 1))
-#   define ATOMIC_FETCH_DEC_FULL(a)      (__sync_fetch_and_add(a, -1))
-#   define ATOMIC_FETCH_ADD_FULL(a, v)   (__sync_fetch_and_add(a, v))
-#   define ATOMIC_LOAD_ACQ(a)            (*(a))
-#   define ATOMIC_LOAD(a)                (*(a))
-#   define ATOMIC_STORE_REL(a, v)        (*(a) = (v))
-#   define ATOMIC_STORE(a, v)            (*(a) = (v))
-#   define ATOMIC_MB_READ                /* Nothing */
-#   define ATOMIC_MB_WRITE               /* Nothing */
-#   define ATOMIC_MB_FULL                __sync_synchronize()
+#   define ATOMIC_FETCH_INC_FULL(a)      (atomic_fetch_add_explicit(a, 1, memory_order_seq_cst)) /*(__sync_fetch_and_add(a, 1))*/
+#   define ATOMIC_FETCH_DEC_FULL(a)      (atomic_fetch_sub_explicit(a, 1, memory_order_seq_cst)) /*(__sync_fetch_and_add(a, -1))*/
+#   define ATOMIC_FETCH_ADD_FULL(a, v)   (atomic_fetch_add_explicit(a, v, memory_order_seq_cst)) /*(__sync_fetch_and_add(a, v))*/
+#   define ATOMIC_LOAD_ACQ(a)            (atomic_load_explicit(a, memory_order_acquire))
+#   define ATOMIC_LOAD(a)                (atomic_load(a))
+#   define ATOMIC_STORE_REL(a, v)        (atomic_store_explicit(a, v, memory_order_release))
+#   define ATOMIC_STORE(a, v)            (atomic_store(a,v))
+#   define ATOMIC_MB_READ                (atomic_thread_fence(memory_order_acquire))
+#   define ATOMIC_MB_WRITE               (atomic_thread_fence(memory_order_release))
+#   define ATOMIC_MB_FULL                (atomic_thread_fence(memory_order_seq_cst)) /*__sync_synchronize()*/
 #  else
 /* Use only for testing purposes (single thread benchmarks) */
 #   define ATOMIC_CAS_FULL(a, e, v)      (*(a) = (v), 1)

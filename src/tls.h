@@ -53,6 +53,9 @@
 #ifndef _TLS_H_
 #define _TLS_H_
 
+// TODO remove definition in release, is set in Makefile
+//#define TLS_COMPILER
+
 #if !defined(TLS_COMPILER) && !defined(TLS_POSIX) && !defined(TLS_DARWIN) && !defined(TLS_GLIBC)
 # error "TLS is not defined correctly (TLS_COMPILER, TLS_POSIX, TLS_DARWIN, TLS_GLIBC)"
 #endif /* !defined(TLS_COMPILER) && !defined(TLS_POSIX) && !defined(TLS_DARWIN) && !defined(TLS_GLIBC) */

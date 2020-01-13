@@ -94,10 +94,10 @@ DEFINES += -DIRREVOCABLE_ENABLED
 # from disabling them.
 ########################################################################
 
-# DEFINES += -DTM_STATISTICS
-DEFINES += -UTM_STATISTICS
-# DEFINES += -DTM_STATISTICS2
-DEFINES += -UTM_STATISTICS2
+ DEFINES += -DTM_STATISTICS
+#DEFINES += -UTM_STATISTICS
+ DEFINES += -DTM_STATISTICS2
+#DEFINES += -UTM_STATISTICS2
 
 ########################################################################
 # Prevent duplicate entries in read/write sets when accessing the same
@@ -190,7 +190,13 @@ DEFINES += -USIGNAL_HANDLER
 # TODO Enable the construction of 32bit lib on 64bit environment 
 
 ########################################################################
-# Use COMPILER thread-local storage (TLS) support by default
+# Use standard c/c++ atomic statements instead of atomic_ops library
+########################################################################
+
+DEFINES += -DATOMIC_BUILTIN
+# DEFINES += -UATOMIC_BUILTIN
+
+######################################################################### Use COMPILER thread-local storage (TLS) support by default
 # TLS_COMPILER: use __thread keyword
 # TLS_POSIX: use posix (pthread) functions
 # TLS_DARWIN: use posix inline functions
